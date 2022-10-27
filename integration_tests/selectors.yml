@@ -1,0 +1,8 @@
+selectors:
+  - name: default
+    default: true
+    definition:
+      union:
+        - intersection:
+          - method: fqn
+            value: "*"

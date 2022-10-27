@@ -1,0 +1,36 @@
+version: 2
+
+models:
+ - name: dbt_run_history_for_test
+   tests:
+    - dbt_utils.unique_combination_of_columns:
+        combination_of_columns:
+          - dbt_invocation_id
+          - node_id
+   columns:
+    - name: dbt_invocation_id
+      tests:
+        - not_null
+    - name: node_id
+      tests:
+        - not_null
+    - name: dbt_run_started_at
+      tests:
+        - not_null
+    - name: dbt_version
+      tests:
+        - not_null
+    - name: resource_type
+      tests:
+        - not_null:
+            where: node_start_at is not null
+    - name: node_start_at
+    - name: node_completed_at
+      tests:
+        - not_null:
+            where: node_start_at is not null
+    - name: status
+    - name: message
+    - name: rows_affected
+    - name: bytes_processed
+    - name: execution_time

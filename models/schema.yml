@@ -1,0 +1,137 @@
+version: 2
+
+models:
+ - name: dbt_run_history
+   description: >
+    [dbt_run_mterics] dbt run history view
+   columns:
+    - name: dbt_invocation_id
+      description: a UUID generated for this dbt command.
+    - name: node_id
+      description: identifier of the executed node
+    - name: dbt_run_started_at
+      description: Date and time when the execution of the dbt command was started [UTC].
+    - name: dbt_version
+      description: Version of dbt at runtime
+    - name: resource_type
+      description:  Type of dbt resource executed [model, seed, etc...]
+    - name: node_start_at
+      description: Node execution start time
+    - name: node_completed_at
+      description: Node completion time
+    - name: status
+      description: Node execution results
+    - name: message
+      description: Adapter messages displayed in dbt logs
+    - name: rows_affected
+      description: Number of affected rows returned by the adapter
+    - name: bytes_processed
+      description: Number of bytes processed returned by the adapter
+    - name: execution_time
+      description: Number of seconds of execution
+
+
+metrics:
+  - name: total_dbt_run_count
+    label: Total dbt run count
+    model: ref('dbt_run_history')
+    description: "Total number of dbt runs"
+
+    calculation_method: count_distinct
+    expression: dbt_invocation_id
+
+    timestamp: dbt_run_started_at
+    time_grains: [day, week, month, quarter, year]
+    dimensions: [node_id, resource_type, dbt_version, ref_node, package_name]
+    config:
+      enabled: True
+
+    meta: {package: dbt_run_metrics}
+
+  - name: total_failure_dbt_run_count
+    label: Total failure dbt run count
+    model: ref('dbt_run_history')
+    description: "Total number of failure dbt runs"
+
+    calculation_method: count_distinct
+    expression: dbt_invocation_id
+
+    timestamp: dbt_run_started_at
+    time_grains: [day, week, month, quarter, year]
+    dimensions: [node_id, resource_type, dbt_version, ref_node, package_name]
+
+    filters:
+      - field: status
+        operator: 'in'
+        value: "('fail','error')"
+    meta: {package: dbt_run_metrics}
+    config:
+      enabled: True
+
+  - name: total_successful_dbt_run_count
+    label: total successful dbt run count
+    description: "Total number of successful dbt runs"
+
+    calculation_method: derived
+    expression: "{{ metric('dbt_run_metrics', 'total_dbt_run_count') }} -  coalesce({{ metric('dbt_run_metrics', 'total_failure_dbt_run_count') }},0)"
+
+    timestamp: dbt_run_started_at
+    time_grains: [day, week, month, quarter, year]
+    dimensions: [node_id, resource_type, dbt_version, ref_node, package_name]
+
+    meta: {package: dbt_run_metrics}
+    config:
+      enabled: True
+
+  - name: dbt_run_failure_rate
+    label: dbt run failure rate
+    description: "failure rate of dbt execution"
+
+    calculation_method: derived
+    expression: "{{ metric('dbt_run_metrics', 'total_failure_dbt_run_count') }} * 1.00 / {{ metric('dbt_run_metrics', 'total_dbt_run_count') }}"
+
+    timestamp: dbt_run_started_at
+    time_grains: [day, week, month, quarter, year]
+    dimensions: [node_id, resource_type, dbt_version, ref_node, package_name]
+
+    meta: {package: dbt_run_metrics}
+    config:
+      enabled: True
+
+  - name: dbt_run_success_rate
+    label: dbt run failure rate
+    description: "failure rate of dbt execution"
+
+    calculation_method: derived
+    expression: "1.00 - {{ metric('dbt_run_metrics', 'dbt_run_failure_rate') }}"
+
+    timestamp: dbt_run_started_at
+    time_grains: [day, week, month, quarter, year]
+    dimensions: [node_id, resource_type, dbt_version, ref_node, package_name]
+
+    meta: {package: dbt_run_metrics}
+    config:
+      enabled: True
+
+  - name: dbt_node_last_success_at
+    label: dbt run success at
+    description: "date and time of successfull dbt node"
+
+    model: ref('dbt_run_history')
+    calculation_method: max
+    expression: node_completed_at
+
+    timestamp: dbt_run_started_at
+    time_grains: [day, week, month, quarter, year]
+    dimensions: [node_id, resource_type, dbt_version, ref_node, package_name]
+
+    filters:
+      - field: status
+        operator: 'not in'
+        value: "('fail','error')"
+      - field: resource_type
+        operator: '<>'
+        value: "'test'"
+    meta: {package: dbt_run_metrics}
+    config:
+      enabled: True
