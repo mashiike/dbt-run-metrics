@@ -13,7 +13,7 @@ Add to your packages.yml
 ```yaml
 packages:
   - git: "https://github.com/mashiike/dbt-run-metrics"
-    revision: v0.0.0
+    revision: v0.1.0
   - package: dbt-labs/metrics
     version: [">=1.3.0", "<1.4.0"]
 ```
