@@ -16,6 +16,7 @@ from {{ metrics.calculate(
         metric('dbt_run_metrics','dbt_run_success_rate'),
         metric('dbt_run_metrics','total_dbt_run_count'),
         metric('dbt_run_metrics','total_successful_dbt_run_count'),
+        metric('dbt_run_metrics','average_dbt_node_execution_time'),
     ] ,
     grain='day',
     secondary_calculations=[

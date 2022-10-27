@@ -135,3 +135,17 @@ metrics:
     meta: {package: dbt_run_metrics}
     config:
       enabled: True
+
+  - name: average_dbt_node_execution_time
+    label: Average dbt node execution time
+    model: ref('dbt_run_history')
+    description: "Average node execution time"
+
+    calculation_method: averate
+    expression: execution_time
+
+    timestamp: dbt_run_started_at
+    time_grains: [day, week, month, quarter, year]
+    dimensions: [node_id, resource_type, dbt_version, ref_node, package_name]
+    config:
+      enabled: True
