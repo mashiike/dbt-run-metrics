@@ -27,6 +27,7 @@ select
     ,e.execution_time
     ,(max(case when status not in ('pass', 'success') then 1 else 0 end) over (partition by dbt_invocation_id,s.ref_node)) = 0 as ref_node_success
     ,(max(case when status not in ('pass', 'success') then 1 else 0 end) over (partition by dbt_invocation_id)) = 0 as dbt_run_success
+    ,{{ dbt.datediff("s.dbt_run_started_at", "e.node_start_at", "microsecond") }} / 1000000.0 as landing_time
     {%- else %}
     ,{{- dbt.safe_cast("NULL",dbt.type_string()) }} as resource_type
     ,{{- dbt.safe_cast("NULL",dbt.type_timestamp()) }} as node_start_at
@@ -39,6 +40,7 @@ select
     ,{{- dbt.safe_cast("NULL",dbt.type_float()) }} as execution_time
     ,NULL = true as ref_node_success
     ,NULL = true as dbt_run_success
+    ,{{- dbt.safe_cast("NULL",dbt.type_float()) }} as landing_time
     {%- endif %}
 
 from run_start_history s

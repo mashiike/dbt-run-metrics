@@ -149,3 +149,17 @@ metrics:
     dimensions: [node_id, resource_type, dbt_version, ref_node, package_name]
     config:
       enabled: True
+
+  - name: average_dbt_node_landing_time
+    label: Average dbt node landing time
+    model: ref('dbt_run_history')
+    description: "Average node landing time"
+
+    calculation_method: averate
+    expression: landing_time
+
+    timestamp: dbt_run_started_at
+    time_grains: [day, week, month, quarter, year]
+    dimensions: [node_id, resource_type, dbt_version, ref_node, package_name]
+    config:
+      enabled: True
