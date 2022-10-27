@@ -65,6 +65,19 @@ select
 from base
 ```
 
+## metrics list
+
+- `metric('dbt_run_metrics','total_dbt_run_count')`
+- `metric('dbt_run_metrics','total_successful_dbt_run_count')`
+- `metric('dbt_run_metrics','total_failure_dbt_run_count')`
+- `metric('dbt_run_metrics','dbt_run_failure_rate')`
+- `metric('dbt_run_metrics','dbt_run_success_rate')`
+- `metric('dbt_run_metrics','dbt_node_last_success_at')`
+- `metric('dbt_run_metrics','average_dbt_node_execution_time')`
+- `metric('dbt_run_metrics','average_dbt_node_landing_time')`
+
+see detials [schema.yml](models/schema.yml)
+
 ## dbt run history
 
 You can access the raw logs by using the `ref('dbt_run_history')`.
