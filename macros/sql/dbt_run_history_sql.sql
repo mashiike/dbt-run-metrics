@@ -19,6 +19,7 @@ select
     ,e.resource_type
     ,e.node_start_at
     ,e.node_completed_at
+    ,e.dbt_run_ended_at
     ,e.status
     ,e.message
     ,e.rows_affected
@@ -30,6 +31,7 @@ select
     ,{{- dbt.safe_cast("NULL",dbt.type_string()) }} as resource_type
     ,{{- dbt.safe_cast("NULL",dbt.type_timestamp()) }} as node_start_at
     ,{{- dbt.safe_cast("NULL",dbt.type_timestamp()) }} as node_completed_at
+    ,{{- dbt.safe_cast("NULL",dbt.type_timestamp()) }} as dbt_run_ended_at
     ,{{- dbt.safe_cast("NULL",dbt.type_string()) }} as status
     ,{{- dbt.safe_cast("NULL",dbt.type_string()) }} as message
     ,{{- dbt.safe_cast("NULL",dbt.type_int()) }} as rows_affected
