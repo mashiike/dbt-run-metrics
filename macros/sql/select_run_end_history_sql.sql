@@ -20,7 +20,7 @@
     select
         {{- dbt.safe_cast("'"~invocation_id~"'",dbt.type_string()) }} as dbt_invocation_id
         ,{{- dbt.safe_cast("'"~res.node.unique_id ~"'",dbt.type_string()) }} as node_id
-        ,{{- dbt.safe_cast("'"~dbt.current_timestamp()~"'",dbt.type_timestamp()) }} as dbt_run_ended_at
+        ,{{- dbt.safe_cast(dbt.current_timestamp(),dbt.type_timestamp()) }} as dbt_run_ended_at
         ,{{- dbt.safe_cast("'"~dbt_version~"'",dbt.type_string()) }} as dbt_version
         ,{{- dbt.safe_cast("'"~res.node.resource_type~"'",dbt.type_string()) }} as resource_type
         ,{{- node_start_at}} as node_start_at
